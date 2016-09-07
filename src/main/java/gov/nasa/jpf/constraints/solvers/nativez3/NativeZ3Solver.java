@@ -103,12 +103,16 @@ public class NativeZ3Solver extends ConstraintSolver
 
   @Override
   public Result solve(Expression<Boolean> f, Valuation result) {
+    NativeZ3SolverContext onetime = null;
     try {
-      defaultContext.push();
-      defaultContext.add(f);
-      return defaultContext.solve(result);
+        onetime = createContext();
+        onetime.add(f);
+        return onetime.solve(result);
     } finally {
-      defaultContext.pop();
+        if (onetime != null) {
+            onetime.dispose();
+            onetime = null;
+        }
     }
   }
 
